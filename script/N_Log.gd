@@ -9,6 +9,8 @@ var velocity : Vector3 = Vector3.ZERO
 var size : float = .002
 func _ready() -> void:
 	pixel_size = size
+	sprite.pixel_size = size
+	sprite.global_rotation = Game.get_billboard_basis(sprite).get_euler()
 	fade_anim()
 
 func fade_anim() -> void:

@@ -91,9 +91,8 @@ shape = SubResource("ConvexPolygonShape3D_7sc4i")
 
 [node name="Creature" parent="." unique_id=880352942 instance=ExtResource("5_ryrav")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
-gravity_scale = 0.0
 
 [node name="Cursor" parent="." unique_id=608018029 instance=ExtResource("6_ryrav")]
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1221512435]
-transform = Transform3D(1, 0, 0, 0, 0.5410479, 0.8409918, 0, -0.8409918, 0.5410479, 0, 34.969917, 19.481491)
+transform = Transform3D(1, 0, 0, 0, 0.30494744, 0.9523692, 0, -0.9523692, 0.30494744, 0, 34.969917, 14.481491)

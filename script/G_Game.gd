@@ -1,5 +1,31 @@
 extends Node3D
 
+
+var rng_game : RandomNumberGenerator = RandomNumberGenerator.new()
+var rng_cosmetic : RandomNumberGenerator = RandomNumberGenerator.new()
+
+var texture_dict : Dictionary[String, Texture2D]
+
+func _ready() -> void:
+	texture_dict = load_textures_in_folder("res://textures/")
+	for i in range(100):
+		spawn_creature(Vector3(rng_game.randf_range(-4, 4), 5, rng_game.randf_range(-4, 4)))
+	
+var creature_prefab : PackedScene = preload("res://scenes/creature.tscn")
+func spawn_creature(pos : Vector3) -> N_Creature:
+	var instance : N_Creature = creature_prefab.instantiate()
+	add_child(instance)
+	instance.global_position = pos
+	return instance
+	
+	
+
+
+
+
+
+
+
 class State:
 	var name : String = "none"
 	func on_change_state(next_state : State) -> State:
@@ -102,3 +128,34 @@ func get_billboard_basis(node : Node3D) -> Basis:
 	var direction_to_camera = (camera.global_transform.origin - node.global_position).normalized()
 	var look_basis = Basis.looking_at(-direction_to_camera, camera.global_transform.basis.y)
 	return look_basis
+
+func find_creature_by_data(data : N_Creature.CreatureData) -> N_Creature:
+	var creatures : Array[N_Creature] = get_creatures_by_emotion(null)
+	for creature : N_Creature in creatures:
+		if creature.data == data:
+			return creature
+	return null
+	
+func find_creature_by_stat(stat : D_Stats.Stat) -> N_Creature:
+	var creatures : Array[N_Creature] = get_creatures_by_emotion(null)
+	for creature : N_Creature in creatures:
+		for c_stat in creature.data.stats.values():
+			if c_stat == stat:
+				return creature
+	return null
+	
+## NULL emotion == all creatures
+func get_creatures_by_emotion(emotion : Variant) -> Array[N_Creature]:
+	var return_me : Array[N_Creature] = []
+	var creatures = Game.get_tree().get_nodes_in_group("creatures")
+	for cr in creatures:
+		if cr is not N_Creature:
+			continue
+		var creature = cr as N_Creature
+		if !emotion:
+			return_me.append(creature)
+			continue
+		if !is_instance_of(creature.emotion, emotion):
+			continue
+		return_me.append(creature)
+	return return_me

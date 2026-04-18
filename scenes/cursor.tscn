@@ -8,4 +8,5 @@ script = ExtResource("1_1eco6")
 
 [node name="Sprite" type="Sprite3D" parent="." unique_id=1317792913]
 unique_name_in_owner = true
+pixel_size = 0.003
 texture = ExtResource("2_s0nli")

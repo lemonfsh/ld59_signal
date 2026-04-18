@@ -7,9 +7,9 @@ class_name N_Cursor
 
 
 var sprites = [
-	preload("res://textures/tile3 1.png"),
-	preload("res://textures/tile4.png"),
-	preload("res://textures/tile5.png")
+	preload("res://textures/cursor1.png"),
+	preload("res://textures/cursor2.png"),
+	preload("res://textures/cursor3.png")
 ]
 enum CursorType {
 	Normal,
@@ -35,9 +35,20 @@ func _input(event: InputEvent) -> void:
 		var collider = raycast.get("collider") as Node
 		if collider:
 			var pos = raycast.get("position")
-			print("did at ", pos)
-			Game.signal_emitted.emit(pos, null)
+			#print("did at ", pos)
+			Game.signal_emitted.emit(pos, Game.Converge.new())
 	if event.is_action_released("leftclick"):
+		type = CursorType.Normal
+		
+	if event.is_action_pressed("rightclick"):
+		type = CursorType.Holding
+		var raycast = Game.camera_raycast(999.9)
+		var collider = raycast.get("collider") as Node
+		if collider:
+			var pos = raycast.get("position")
+			#print("did at ", pos)
+			Game.signal_emitted.emit(pos, Game.Diverge.new())
+	if event.is_action_released("rightclick"):
 		type = CursorType.Normal
 	
 func _process(delta: float) -> void:
