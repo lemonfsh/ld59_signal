@@ -4,6 +4,8 @@
 [ext_resource type="Resource" uid="uid://bkhxcqsquw1yg" path="res://addons/func_godot/func_godot_default_map_settings.tres" id="2_7jktm"]
 [ext_resource type="Texture2D" uid="uid://dd4tjegy6ryvm" path="res://textures/tile5.png" id="3_ryrav"]
 [ext_resource type="Texture2D" uid="uid://6afwfyvhtelj" path="res://textures/tile6.png" id="4_eow3j"]
+[ext_resource type="PackedScene" uid="uid://b6kg5vsymokbq" path="res://scenes/creature.tscn" id="5_ryrav"]
+[ext_resource type="PackedScene" uid="uid://dda1jobv60xxj" path="res://scenes/cursor.tscn" id="6_ryrav"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j5wjh"]
 albedo_texture = ExtResource("3_ryrav")
@@ -66,6 +68,7 @@ map_settings = ExtResource("2_7jktm")
 metadata/_custom_type_script = "uid://cwu5cf7a0awcd"
 
 [node name="entity_0_worldspawn" type="StaticBody3D" parent="FuncGodotMap" unique_id=912110973]
+collision_layer = 13
 collision_mask = 0
 
 [node name="entity_0_mesh_instance" type="MeshInstance3D" parent="FuncGodotMap/entity_0_worldspawn" unique_id=289558411]
@@ -85,3 +88,12 @@ shape = SubResource("ConvexPolygonShape3D_215e1")
 
 [node name="entity_0_brush_4_collision_shape" type="CollisionShape3D" parent="FuncGodotMap/entity_0_worldspawn" unique_id=1560023682]
 shape = SubResource("ConvexPolygonShape3D_7sc4i")
+
+[node name="Creature" parent="." unique_id=880352942 instance=ExtResource("5_ryrav")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
+gravity_scale = 0.0
+
+[node name="Cursor" parent="." unique_id=608018029 instance=ExtResource("6_ryrav")]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1221512435]
+transform = Transform3D(1, 0, 0, 0, 0.5410479, 0.8409918, 0, -0.8409918, 0.5410479, 0, 34.969917, 19.481491)

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://b6kg5vsymokbq"]
+
+[ext_resource type="Script" uid="uid://fau3uiuase5b" path="res://script/N_Creature.gd" id="1_upmfi"]
+[ext_resource type="Texture2D" uid="uid://g6tenwh7n125" path="res://textures/tile4.png" id="2_bvms0"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ryrav"]
+
+[node name="Creature" type="RigidBody3D" unique_id=880352942]
+script = ExtResource("1_upmfi")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=158133445]
+shape = SubResource("SphereShape3D_ryrav")
+
+[node name="Sprite" type="Sprite3D" parent="." unique_id=1260361128]
+unique_name_in_owner = true
+texture = ExtResource("2_bvms0")
