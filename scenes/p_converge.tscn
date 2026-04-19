@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://b23y4d572auyx"]
+
+[ext_resource type="Material" uid="uid://dn8fd2mpxb60v" path="res://textures/tile3 1.tres" id="1_b122q"]
+[ext_resource type="Script" uid="uid://c4ldl7br4st73" path="res://script/N_Particle.gd" id="2_ovfqk"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_63jj1"]
+material = ExtResource("1_b122q")
+orientation = 1
+
+[node name="particle" type="CPUParticles3D" unique_id=1526017211]
+emitting = false
+amount = 90
+one_shot = true
+explosiveness = 0.86
+mesh = SubResource("QuadMesh_63jj1")
+emission_shape = 6
+emission_ring_axis = Vector3(0, -32.135, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 4.0
+emission_ring_inner_radius = 3.9
+emission_ring_cone_angle = 90.0
+spread = 180.0
+flatness = 1.0
+gravity = Vector3(0, 0, 0)
+linear_accel_min = -2.0
+linear_accel_max = -2.0
+radial_accel_min = -7.0
+radial_accel_max = -7.0
+script = ExtResource("2_ovfqk")

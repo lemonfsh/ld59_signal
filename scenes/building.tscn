@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://ckn7gvg0jpqx5"]
+
+[ext_resource type="Script" uid="uid://dv48uvhfe2c0w" path="res://script/N_Building.gd" id="1_uvy8r"]
+[ext_resource type="Texture2D" uid="uid://bfq1y0hd3a3qh" path="res://textures/texture2-3.png" id="2_uvy8r"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_uvy8r"]
+radius = 3.0
+
+[node name="Building" type="RigidBody3D" unique_id=880352942 groups=["buildings"]]
+gravity_scale = 0.0
+contact_monitor = true
+max_contacts_reported = 99
+linear_damp = 2.0
+angular_damp = 2.0
+script = ExtResource("1_uvy8r")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=158133445]
+shape = SubResource("SphereShape3D_uvy8r")
+
+[node name="Sprite" type="Sprite3D" parent="." unique_id=1260361128]
+unique_name_in_owner = true
+pixel_size = 0.035
+texture_filter = 0
+texture = ExtResource("2_uvy8r")

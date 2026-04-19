@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://dqc8onhi0x2np"]
+
+[ext_resource type="Material" uid="uid://dn8fd2mpxb60v" path="res://textures/tile3 1.tres" id="1_ckn3q"]
+[ext_resource type="Script" uid="uid://c4ldl7br4st73" path="res://script/N_Particle.gd" id="2_g17km"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_63jj1"]
+material = ExtResource("1_ckn3q")
+orientation = 1
+
+[node name="particle" type="CPUParticles3D" unique_id=1526017211]
+emitting = false
+amount = 61
+one_shot = true
+explosiveness = 0.86
+mesh = SubResource("QuadMesh_63jj1")
+spread = 180.0
+flatness = 0.9
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 3.0
+linear_accel_min = -2.0
+linear_accel_max = -2.0
+script = ExtResource("2_g17km")

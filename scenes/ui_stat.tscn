@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://ca81va3s4jfvm"]
+
+[ext_resource type="Shader" uid="uid://c3or2yrpj2k2s" path="res://script/outline.gdshader" id="1_nocwv"]
+[ext_resource type="Texture2D" uid="uid://c4on8j5xr7kdd" path="res://textures/angry.png" id="2_hacum"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bg10b"]
+render_priority = 127
+shader = ExtResource("1_nocwv")
+shader_parameter/sprite_texture = ExtResource("2_hacum")
+shader_parameter/line_color = Color(1, 1, 1, 1)
+shader_parameter/glowSize = 10.3610004921475
+shader_parameter/glowDensity = 3
+shader_parameter/glowRadialCoverage = 4
+shader_parameter/glowAngle = 0.534000025365
+shader_parameter/glowSharpness = 1.8760000891100002
+shader_parameter/alphaThreshold = 0.2
+
+[node name="UI_Stat" type="Node3D" unique_id=668636744]
+
+[node name="Text" type="Label3D" parent="." unique_id=738450037]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, 0)
+sorting_offset = 10.0
+pixel_size = 0.01
+no_depth_test = true
+texture_filter = 0
+render_priority = 30
+outline_render_priority = 1
+text = "State"
+horizontal_alignment = 0
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=358007906]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09572044, 0, 0)
+sorting_offset = 900.0
+material_override = SubResource("ShaderMaterial_bg10b")
+offset = Vector2(-200, 0)
+pixel_size = 0.003
+no_depth_test = true
+texture_filter = 0
+render_priority = 28
+texture = ExtResource("2_hacum")

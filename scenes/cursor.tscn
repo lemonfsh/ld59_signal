@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dda1jobv60xxj"]
 
 [ext_resource type="Script" uid="uid://v604p3eigivg" path="res://script/N_Cursor.gd" id="1_1eco6"]
-[ext_resource type="Texture2D" uid="uid://dd4tjegy6ryvm" path="res://textures/tile5.png" id="2_s0nli"]
+[ext_resource type="Texture2D" uid="uid://u44o3mri8eed" path="res://textures/cursor2.png" id="2_s0nli"]
 
 [node name="Cursor" type="Node3D" unique_id=608018029]
 script = ExtResource("1_1eco6")
@@ -9,4 +9,5 @@ script = ExtResource("1_1eco6")
 [node name="Sprite" type="Sprite3D" parent="." unique_id=1317792913]
 unique_name_in_owner = true
 pixel_size = 0.003
+render_priority = 127
 texture = ExtResource("2_s0nli")

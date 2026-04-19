@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c6kn7ypvhsib" path="res://script/N_Log.gd" id="1_spugk"]
 
 [node name="Log" type="Label3D" unique_id=1787079877]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 sorting_offset = 99.0
 pixel_size = 0.002
 no_depth_test = true

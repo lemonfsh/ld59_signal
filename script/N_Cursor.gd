@@ -34,9 +34,11 @@ func _input(event: InputEvent) -> void:
 		var raycast = Game.camera_raycast(999.9)
 		var collider = raycast.get("collider") as Node
 		if collider:
+			Game.inspect_enabled = false
 			var pos = raycast.get("position")
 			#print("did at ", pos)
 			Game.signal_emitted.emit(pos, Game.Converge.new())
+			Particle.spawn_particle(Particle.ParticleType.Converge, pos)
 	if event.is_action_released("leftclick"):
 		type = CursorType.Normal
 		
@@ -45,9 +47,11 @@ func _input(event: InputEvent) -> void:
 		var raycast = Game.camera_raycast(999.9)
 		var collider = raycast.get("collider") as Node
 		if collider:
+			Game.inspect_enabled = false
 			var pos = raycast.get("position")
 			#print("did at ", pos)
 			Game.signal_emitted.emit(pos, Game.Diverge.new())
+			Particle.spawn_particle(Particle.ParticleType.Diverge, pos)
 	if event.is_action_released("rightclick"):
 		type = CursorType.Normal
 	
