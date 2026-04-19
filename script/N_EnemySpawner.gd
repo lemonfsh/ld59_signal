@@ -27,6 +27,6 @@ func do_day() -> void:
 		for i in range(amount_to_repop):
 			Game.spawn_creature(Vector3(0, 4, 0), N_Creature.Player.new())
 	else:
-		Util.log_this("Glorbles didnt repopulated", Vector3(0, 20, 0), Color.WHITE, 1.0, 3.0, Game.try_get_image(Game.texture_dict, "mood"))
+		Util.log_this("Glorbles didnt repopulate", Vector3(0, 20, 0), Color.WHITE, 1.0, 3.0, Game.try_get_image(Game.texture_dict, "mood"))
 	
 	pass

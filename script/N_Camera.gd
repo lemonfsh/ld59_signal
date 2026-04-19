@@ -15,7 +15,6 @@ var inspect_target_pos : Vector3
 @onready var playerinfo : Node3D = %PlayerInfo
 @onready var outline_shader_prefab : Shader = preload("res://script/outline.gdshader")
 
-var player_ui_stats : Array[Node3D] = []
 var inspect_ui_stats : Array[Node3D] = []
 
 
@@ -28,16 +27,6 @@ func allocate_ui_stats() -> void:
 	var maxr = 5
 	var ui_stat_size : float = .6
 	var ui_stat_increment : float = .4
-	for i in range(maxr):
-		var instance = Game.ui_stat_prefab.instantiate()
-		playerinfo.add_child(instance)
-		instance.position += Vector3(0, -ui_stat_increment, 0) * i
-		instance.scale = Vector3.ONE * ui_stat_size
-		player_ui_stats.append(instance)
-		var tooltipsprite : Sprite3D = instance.get_child(1)
-		var shader_mat = ShaderMaterial.new()
-		shader_mat.shader = outline_shader_prefab
-		tooltipsprite.material_override = shader_mat
 		
 	for i in range(maxr):
 		var instance = Game.ui_stat_prefab.instantiate()
@@ -140,8 +129,13 @@ func configure_ui_stat(ui_stat : Node3D, stat : D_Stats.Stat) -> void:
 	var tooltiptext : Label3D = ui_stat.get_child(0)
 	tooltiptext.text = stat.format_as_string()
 	
+	
+	
 	var tooltipsprite : Sprite3D = ui_stat.get_child(1)
 	var shader = tooltipsprite.material_override as ShaderMaterial
 	shader.set_shader_parameter("sprite_texture", Game.try_get_image(Game.texture_dict, stat.ui_image_path))
 	shader.set_shader_parameter("glowSize", 4)
 	shader.set_shader_parameter("line_color", Color.WHITE)
+	
+	var tooltiptip : N_Tooltip = tooltipsprite.get_child(0)
+	tooltiptip.stat = stat

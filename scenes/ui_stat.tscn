@@ -2,6 +2,7 @@
 
 [ext_resource type="Shader" uid="uid://c3or2yrpj2k2s" path="res://script/outline.gdshader" id="1_nocwv"]
 [ext_resource type="Texture2D" uid="uid://c4on8j5xr7kdd" path="res://textures/angry.png" id="2_hacum"]
+[ext_resource type="Script" uid="uid://bns7lktvoevhu" path="res://script/N_Tooltip.gd" id="3_hacum"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bg10b"]
 render_priority = 127
@@ -12,8 +13,10 @@ shader_parameter/glowSize = 10.3610004921475
 shader_parameter/glowDensity = 3
 shader_parameter/glowRadialCoverage = 4
 shader_parameter/glowAngle = 0.534000025365
-shader_parameter/glowSharpness = 1.8760000891100002
+shader_parameter/glowSharpness = 1.87600008911
 shader_parameter/alphaThreshold = 0.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_dssaf"]
 
 [node name="UI_Stat" type="Node3D" unique_id=668636744]
 
@@ -38,3 +41,10 @@ no_depth_test = true
 texture_filter = 0
 render_priority = 28
 texture = ExtResource("2_hacum")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Sprite3D" unique_id=344437948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56749594, 0, 0)
+script = ExtResource("3_hacum")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sprite3D/StaticBody3D" unique_id=1091026773]
+shape = SubResource("SphereShape3D_dssaf")

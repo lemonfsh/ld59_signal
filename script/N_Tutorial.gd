@@ -11,7 +11,8 @@ var tutorial_texts : Array[String] = [
 	"Your glorbles have EMOTIONS.\n \nSignal them too much and\ntheyll become ANGRY and unresponsive",
 	"Signal them too little and\ntheyll become SAD and slow.",
 	"They are also sometimes\ntoo dumb to understand you,\nand youll be ignored",
-	"Your glorbles pick up ITEMS when\nthey get close to one\n \nIf all glorbles that hold items are\nclose enough to each other,\ntheyll start to build a BUILDING",
+	"Your glorbles have STATS\nthat affect their EMOTIONS\n \nUse MIDDLE CLICK to inspect them",
+	"Your glorbles pick up ITEMS when\nthey get close to one\n \nIf ALL glorbles that hold items are\nclose enough to each other,\ntheyll start to build a BUILDING",
 	"Enemy glorbles will come every day.\nYour buildings will protect your glorbles against them\n \nThey are defenseless without buildings\n \nGood luck."
 ]
 
@@ -20,6 +21,7 @@ var tutorial_images : Array[Texture2D] = [
 	Game.try_get_image(Game.texture_dict, "angry"),
 	Game.try_get_image(Game.texture_dict, "sad"),
 	Game.try_get_image(Game.texture_dict, "confused"),
+	null,
 	Game.try_get_image(Game.texture_dict, "hammer"),
 	null,
 ]

@@ -5,6 +5,7 @@
 [ext_resource type="Material" uid="uid://do2j4kavsmqjy" path="res://textures/tile5.tres" id="3_iotsf"]
 [ext_resource type="Material" uid="uid://va3c02a2lb6w" path="res://textures/tile6.tres" id="4_lc2xo"]
 [ext_resource type="PackedScene" uid="uid://dda1jobv60xxj" path="res://scenes/cursor.tscn" id="6_ryrav"]
+[ext_resource type="Texture2D" uid="uid://b7rbm3q3jc2aj" path="res://border.png" id="7_7sc4i"]
 [ext_resource type="Script" uid="uid://t4cs7lccxbbq" path="res://script/N_Camera.gd" id="7_j5wjh"]
 [ext_resource type="Shader" uid="uid://bre7vguqym2gv" path="res://script/circle_slider.gdshader" id="8_iotsf"]
 [ext_resource type="Texture2D" uid="uid://gi5q8dcdb33d" path="res://textures/tile3 1.png" id="9_lc2xo"]
@@ -14,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://pi1gby6d7nhu" path="res://textures/textureUI.png" id="10_mfdv2"]
 [ext_resource type="Texture2D" uid="uid://c4on8j5xr7kdd" path="res://textures/angry.png" id="11_lc2xo"]
 [ext_resource type="Script" uid="uid://c3m8uoiwqycgd" path="res://script/N_EnemySpawner.gd" id="13_lc2xo"]
+[ext_resource type="Script" uid="uid://bydg5bs66ud8c" path="res://script/N_TooltipController.gd" id="15_80cx4"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_215e1"]
 _surfaces = [{
@@ -155,7 +157,7 @@ shader_parameter/show_handle = true
 ambient_light_source = 2
 ambient_light_color = Color(0.8175213, 0.8175213, 0.81752115, 1)
 
-[node name="game" type="Node3D" unique_id=141563193]
+[node name="main" type="Node3D" unique_id=141563193]
 
 [node name="FuncGodotMap" type="Node3D" parent="." unique_id=1816833567]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
@@ -297,6 +299,13 @@ pixel_size = 0.0025
 texture_filter = 0
 texture = SubResource("ViewportTexture_j5wjh")
 
+[node name="Border" type="Sprite3D" parent="Camera3D/Inspect" unique_id=465665129]
+transform = Transform3D(1, 0, 0, 0, 0.99999976, 1.4901161e-08, 0, -1.4901161e-08, 0.99999976, 0, -1.261, 0.259)
+pixel_size = 0.005
+texture_filter = 0
+render_priority = 1
+texture = ExtResource("7_7sc4i")
+
 [node name="SubViewport" type="SubViewport" parent="Camera3D" unique_id=1913514903]
 
 [node name="SubViewCamera" type="Camera3D" parent="Camera3D/SubViewport" unique_id=549789475]
@@ -312,6 +321,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.36, 3, -6)
 material_override = SubResource("ShaderMaterial_7sc4i")
 texture_filter = 0
 texture = ExtResource("10_215e1")
+
+[node name="Border" type="Sprite3D" parent="Camera3D/PlayerInfo/DayTimer" unique_id=1277450933]
+transform = Transform3D(1, 0, 0, 0, 0.99999976, 1.4901161e-08, 0, -1.4901161e-08, 0.99999976, 0, 0, 0)
+texture_filter = 0
+render_priority = 1
+texture = ExtResource("7_7sc4i")
 
 [node name="SubLabel2" type="Label3D" parent="Camera3D/PlayerInfo" unique_id=2040001090]
 unique_name_in_owner = true
@@ -338,6 +353,7 @@ script = ExtResource("10_lc2xo")
 [node name="Bg" type="Sprite3D" parent="Camera3D/Tutorial" unique_id=298738353]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.36000013, 4.0000024, -7)
+modulate = Color(1, 1, 1, 0.8627451)
 pixel_size = 0.02
 texture_filter = 0
 texture = ExtResource("10_iotsf")
@@ -371,6 +387,23 @@ modulate = Color(0.51718444, 0.5171845, 0.51718444, 1)
 pixel_size = 0.03
 texture_filter = 0
 texture = ExtResource("10_mfdv2")
+
+[node name="Tooltip" type="Node3D" parent="Camera3D" unique_id=1137976561]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -7, 0)
+script = ExtResource("15_80cx4")
+
+[node name="Tooltiptext" type="Label3D" parent="Camera3D/Tooltip" unique_id=54022121]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.9999995, -1.0658141e-14, 0, 1.0658141e-14, 0.9999995, -0.36000013, 4.2050023, -6)
+texture_filter = 0
+render_priority = 2
+outline_render_priority = 1
+font_size = 64
+outline_size = 22
+vertical_alignment = 0
+line_spacing = 0.055
+autowrap_trim_flags = 0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1756083161]
 environment = SubResource("Environment_ryrav")

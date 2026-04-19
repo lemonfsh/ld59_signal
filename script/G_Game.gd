@@ -42,6 +42,9 @@ var texture_dict : Dictionary[String, Texture2D] = {
 var inspect_enabled : bool = false
 
 func _ready() -> void:
+	spawn_stuff()
+	
+func spawn_stuff() -> void:
 	for i in range(100):
 		spawn_creature(Vector3(rng_game.randf_range(-4, 4), 5, rng_game.randf_range(-4, 4)))
 	var a : float = 15
@@ -49,7 +52,7 @@ func _ready() -> void:
 	spawn_some_items(Vector3(-a, 4, a), 10)
 	spawn_some_items(Vector3(a, 4, -a), 10)
 	spawn_some_items(Vector3(a, 4, a), 10)
-		
+	
 func spawn_some_items(offset : Vector3, num : int) -> void:
 	var rng_offset : float = 7.0
 	for i in range(num):
@@ -94,12 +97,28 @@ func _physics_process(delta: float) -> void:
 	if game_started:
 		do_day_progress(delta)
 	check_for_building(delta)
+	check_for_gameend(delta)
 	
-	
+
+var game_ended : bool = false
 func check_for_gameend(delta : float) -> void:
 	var cr := Game.get_creatures_by_team(0)
-	if cr.size() <= 0:
+	if cr.size() <= 0 and !game_ended:
+		game_ended = true
 		Util.log_this("You lost..", Vector3(0, 20, 0), Color.CORAL, 2.0, 5.0)
+		Util.log_this("Survived " + str(day) + " days.", Vector3(0, 20, 5), Color.CORAL, 2.0, 3.0)
+		await Util.create_timer(3.0)
+		for child in get_children(true):
+			child.queue_free()
+		get_tree().reload_current_scene()
+		game_started = false
+		day = 0
+		day_progress = 0
+		inspect_enabled = false
+		building_status = "Not enough glorbles with items.."
+		building_status_color = Color.RED
+		building = false
+		spawn_stuff()
 	
 func _process(delta: float) -> void:
 	if Input.is_action_pressed("speedup"):
@@ -109,7 +128,7 @@ func _process(delta: float) -> void:
 		Engine.time_scale = 1.0
 
 func do_day_progress(delta: float) -> void:
-	day_progress += delta * .035
+	day_progress += delta * .03
 	if day_progress >= 1.0:
 		day_progress = 0.0
 		day += 1

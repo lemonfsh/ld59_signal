@@ -12,6 +12,7 @@ class_name D_Stats
 class Stat:
 	const BASE_PATH : String = "res://textures/"
 	var ui_image_path : String = "null"
+	var desc : String = "null"
 	func display_me() -> bool:
 		return true
 	signal value_changed
@@ -54,17 +55,20 @@ class Health extends Stat:
 	func display_me() -> bool:
 		return false
 	func _init() -> void:
+		desc = "Health:\nreach 0 and i die"
 		ui_image_path = "heart"
 		value = 3.0
 		
 class Speed extends Stat:
 	func _init() -> void:
+		desc = "Speed:\nreaches signal destinations faster"
 		ui_image_path = "wing"
 		value = 10.0
 
 class Patience extends Stat:
 	func _init() -> void:
 		ui_image_path = "patience"
+		desc = "Patience:\naffects mood reactions to signals"
 		base_value = 20.0
 		value = 10.0
 	func on_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
@@ -74,9 +78,11 @@ class Patience extends Stat:
 class Mood extends Stat:
 	func _init() -> void:
 		ui_image_path = "mood"
+		desc = "Mood:\nreach 0 to become angry, reach 200 to become sad"
 		value = 100.0
 	func set_value(new_value : float) -> void:
 		value = new_value
+		value_changed.emit()
 		if new_value <= 0.0:
 			var me : N_Creature = Game.find_creature_by_stat(self)
 			if me and me.emotion is N_Creature.Content:
@@ -87,19 +93,23 @@ class Mood extends Stat:
 					value = 150
 		if new_value >= 200.0:
 			var me : N_Creature = Game.find_creature_by_stat(self)
-			if me and me.emotion is N_Creature.Content and Game.game_started:
+			if me and me.emotion is N_Creature.Content:
+				if !Game.game_started:
+					value = 100
+					return
 				var chance = Game.rng_game.randf_range(0.0, me.data.get_stat(D_Stats.Patience).base_value)
 				if chance > me.data.get_stat(D_Stats.Patience).value:
 					me.change_emotion(N_Creature.Sad.new())
 				else:
 					value = 150
-		value_changed.emit()
+		
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
 		change_value(.18)
 
 class Intelligence extends Stat:
 	func _init() -> void:
 		ui_image_path = "confused"
+		desc = "Intelligence:\naffects the chance to ignore signals"
 		base_value = 100.0
 		value = 95.0
 	func on_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
