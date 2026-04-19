@@ -4,14 +4,15 @@
 [ext_resource type="Resource" uid="uid://bkhxcqsquw1yg" path="res://addons/func_godot/func_godot_default_map_settings.tres" id="2_7jktm"]
 [ext_resource type="Material" uid="uid://do2j4kavsmqjy" path="res://textures/tile5.tres" id="3_iotsf"]
 [ext_resource type="Material" uid="uid://va3c02a2lb6w" path="res://textures/tile6.tres" id="4_lc2xo"]
-[ext_resource type="PackedScene" uid="uid://b6kg5vsymokbq" path="res://scenes/creature.tscn" id="5_ryrav"]
 [ext_resource type="PackedScene" uid="uid://dda1jobv60xxj" path="res://scenes/cursor.tscn" id="6_ryrav"]
-[ext_resource type="PackedScene" uid="uid://blb1od6gkf3sc" path="res://scenes/item.tscn" id="7_eow3j"]
 [ext_resource type="Script" uid="uid://t4cs7lccxbbq" path="res://script/N_Camera.gd" id="7_j5wjh"]
 [ext_resource type="Shader" uid="uid://bre7vguqym2gv" path="res://script/circle_slider.gdshader" id="8_iotsf"]
 [ext_resource type="Texture2D" uid="uid://gi5q8dcdb33d" path="res://textures/tile3 1.png" id="9_lc2xo"]
-[ext_resource type="PackedScene" uid="uid://ckn7gvg0jpqx5" path="res://scenes/building.tscn" id="9_vef74"]
 [ext_resource type="Texture2D" uid="uid://mrnejucgj1pf" path="res://other/null.png" id="10_215e1"]
+[ext_resource type="Texture2D" uid="uid://c7wh4t7jlyy5t" path="res://textures/textureUIbg.png" id="10_iotsf"]
+[ext_resource type="Script" uid="uid://dybuu55e83yhe" path="res://script/N_Tutorial.gd" id="10_lc2xo"]
+[ext_resource type="Texture2D" uid="uid://pi1gby6d7nhu" path="res://textures/textureUI.png" id="10_mfdv2"]
+[ext_resource type="Texture2D" uid="uid://c4on8j5xr7kdd" path="res://textures/angry.png" id="11_lc2xo"]
 [ext_resource type="Script" uid="uid://c3m8uoiwqycgd" path="res://script/N_EnemySpawner.gd" id="13_lc2xo"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_215e1"]
@@ -263,9 +264,6 @@ shape = SubResource("ConvexPolygonShape3D_kq12w")
 [node name="entity_0_brush_30_collision_shape" type="CollisionShape3D" parent="FuncGodotMap/entity_0_worldspawn" unique_id=879002575]
 shape = SubResource("ConvexPolygonShape3D_t46w6")
 
-[node name="Creature" parent="." unique_id=880352942 instance=ExtResource("5_ryrav")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)
-
 [node name="Cursor" parent="." unique_id=608018029 instance=ExtResource("6_ryrav")]
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1221512435]
@@ -274,11 +272,12 @@ script = ExtResource("7_j5wjh")
 
 [node name="Inspect" type="Node3D" parent="Camera3D" unique_id=1957216857]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 7, -2.861023e-06, -3)
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 9, -2.861023e-06, -3)
 
 [node name="MainLabel" type="Label3D" parent="Camera3D/Inspect" unique_id=785438950]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.99999964, -1.4210855e-14, 0, 1.4210855e-14, 0.99999964, 1.25, 2.1009998, -0.25899887)
+texture_filter = 0
 text = "name: asdaiosdjsao"
 font_size = 40
 horizontal_alignment = 2
@@ -286,9 +285,11 @@ horizontal_alignment = 2
 [node name="SubLabel" type="Label3D" parent="Camera3D/Inspect" unique_id=1009833815]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.9999997, -1.0658141e-14, 0, 1.0658141e-14, 0.9999997, 1.25, 1.8309999, -0.25899887)
+texture_filter = 0
 text = "emotion : asdjsaoid"
 font_size = 40
 horizontal_alignment = 2
+vertical_alignment = 0
 
 [node name="SubViewDisplay" type="Sprite3D" parent="Camera3D/Inspect" unique_id=1932055595]
 transform = Transform3D(1, 0, 0, 0, 0.99999976, 1.4901161e-08, 0, -1.4901161e-08, 0.99999976, 0, -1.261, 0.259)
@@ -307,22 +308,72 @@ unique_name_in_owner = true
 
 [node name="DayTimer" type="Sprite3D" parent="Camera3D/PlayerInfo" unique_id=421151374]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 3.0000007, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.36, 3, -6)
 material_override = SubResource("ShaderMaterial_7sc4i")
+texture_filter = 0
 texture = ExtResource("10_215e1")
+
+[node name="SubLabel2" type="Label3D" parent="Camera3D/PlayerInfo" unique_id=2040001090]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.9999995, -1.0658141e-14, 0, 1.0658141e-14, 0.9999995, -4.175, 0.661, -3.259)
+texture_filter = 0
+text = "Day: 0"
+font_size = 40
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="SubLabel3" type="Label3D" parent="Camera3D/PlayerInfo" unique_id=1824816576]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.9999995, -1.0658141e-14, 0, 1.0658141e-14, 0.9999995, -4.175, -1.664, -3.259)
+texture_filter = 0
+text = "Building Status:"
+font_size = 30
+horizontal_alignment = 0
+vertical_alignment = 0
+
+[node name="Tutorial" type="Node3D" parent="Camera3D" unique_id=1561822390]
+unique_name_in_owner = true
+script = ExtResource("10_lc2xo")
+
+[node name="Bg" type="Sprite3D" parent="Camera3D/Tutorial" unique_id=298738353]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.36000013, 4.0000024, -7)
+pixel_size = 0.02
+texture_filter = 0
+texture = ExtResource("10_iotsf")
+
+[node name="TutorialText" type="Label3D" parent="Camera3D/Tutorial/Bg" unique_id=2070930221]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.9999995, -1.0658141e-14, 0, 1.0658141e-14, 0.9999995, 0, 0.205, 1)
+texture_filter = 0
+render_priority = 2
+outline_render_priority = 1
+text = "Day: 0"
+font_size = 64
+outline_size = 22
+vertical_alignment = 0
+line_spacing = 0.055
+autowrap_trim_flags = 0
+
+[node name="TutorialImage" type="Sprite3D" parent="Camera3D/Tutorial/Bg" unique_id=81957196]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -1, 0)
+sorting_offset = 0.09
+offset = Vector2(0, 63.465)
+texture_filter = 0
+texture = ExtResource("11_lc2xo")
+
+[node name="Bg2" type="Sprite3D" parent="Camera3D/Tutorial/Bg" unique_id=2125260817]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -1, 0)
+offset = Vector2(0, 20)
+modulate = Color(0.51718444, 0.5171845, 0.51718444, 1)
+pixel_size = 0.03
+texture_filter = 0
+texture = ExtResource("10_mfdv2")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1756083161]
 environment = SubResource("Environment_ryrav")
-
-[node name="Item" parent="." unique_id=198572539 instance=ExtResource("7_eow3j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 5, 8)
-
-[node name="Item2" parent="." unique_id=471733875 instance=ExtResource("7_eow3j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 5, 12)
-
-[node name="Building" parent="." unique_id=743218466 instance=ExtResource("9_vef74")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.763973, -13.990734)
-gravity_scale = 1.0
 
 [node name="EnemySpawner" type="Node3D" parent="." unique_id=1823562452]
 script = ExtResource("13_lc2xo")

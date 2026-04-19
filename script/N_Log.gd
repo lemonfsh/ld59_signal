@@ -20,9 +20,9 @@ func fade_anim() -> void:
 	if texture:
 		sprite.texture = texture
 	var tween = create_tween()
-	tween.tween_property(sprite, "modulate", Color(mod_color.r, mod_color.g, mod_color.b, 0), time)
-	tween.tween_property(self, "modulate", Color(mod_color.r, mod_color.g, mod_color.b, 0), time)
-	tween.tween_property(self, "outline_modulate", Color(0, 0, 0, 0), time)
+	tween.tween_property(sprite, "modulate", Color(mod_color.r, mod_color.g, mod_color.b, 0), time).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
+	tween.tween_property(self, "modulate", Color(mod_color.r, mod_color.g, mod_color.b, 0), time).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
+	tween.tween_property(self, "outline_modulate", Color(0, 0, 0, 0), time).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUINT)
 	await tween.finished
 	queue_free()
 	

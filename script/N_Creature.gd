@@ -2,7 +2,7 @@ extends N_Abstract
 class_name N_Creature
 
 @onready var sprite : Sprite3D = %Sprite
-
+@onready var sprite2 : Sprite3D = %Sprite2
 
 var data : CreatureData 
 
@@ -13,16 +13,19 @@ var gravity_vector : Vector3 = Game.default_gravity_vector:
 
 func _ready() -> void:
 	if !data:
-		data = CreatureData.new()
+		data = Player.new()
 	data.reset_target(self)
 	data.name = Game.get_random_creature_name()
 	if !emotion:
 		emotion = Content.new()
 		
+	data.on_ready(self)
+		
 var target_rot : Vector3 = Vector3.ZERO
 func _process(delta : float):
 	angular_velocity = Vector3.ZERO
 	sprite.global_rotation = Game.update_lerp(sprite.global_rotation, target_rot, 3, delta)
+	sprite2.global_rotation = sprite.global_rotation
 	
 func _physics_process(delta : float) -> void:
 	target_rot = Game.get_billboard_basis(self).get_euler()
@@ -30,8 +33,16 @@ func _physics_process(delta : float) -> void:
 	emotion.on_physics_proccess(self, delta)
 	control_item(delta)
 
+var dying : bool = false
 func kill_me() -> void:
+	if dying:
+		return
+	dying = true
+	data.on_death(self)
 	Particle.spawn_particle(Particle.ParticleType.Die, global_position)
+	if item_picked_up:
+		item_picked_up.picked_up_by = null
+		item_picked_up = null
 	queue_free()
 
 @onready var T_on_signal = Game.signal_emitted.connect(on_signal)
@@ -86,9 +97,10 @@ class Angry extends Emotion:
 	func _init() -> void:
 		name = "Angry"
 		ui_image_path = "angry"
-		timer = 5.0
+		timer = 3.0
 	func on_react_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
 		activate_me(me)
+		Audio.play_sound(Audio.AudioName.Angry, 1.0)
 		me.data.reset_target(me)
 		return false
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
@@ -102,10 +114,11 @@ class Sad extends Emotion:
 	func _init() -> void:
 		name = "Sad"
 		ui_image_path = "sad"
-		timer = 5.0
+		timer = 3.0
 		
 	func on_react_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
 		activate_me(me)
+		Audio.play_sound(Audio.AudioName.Sad, 1.0)
 		return true
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
 		timer -= delta
@@ -115,6 +128,7 @@ class Sad extends Emotion:
 			
 	func on_enter_this_emotion(me : N_Creature) -> void:
 		activate_me(me)
+		Audio.play_sound(Audio.AudioName.Sad, 1.0)
 		me.data.get_stat(D_Stats.Speed).change_value(-7)
 	func on_exit_this_emotion(me : N_Creature) -> void:
 		me.data.get_stat(D_Stats.Speed).change_value(7)
@@ -145,6 +159,39 @@ class CreatureData:
 	
 	func _init() -> void:
 		pass
+		
+	var team_color : Color
+	
+	func on_ready(me : N_Creature) -> void:
+		team_color = Color.RED
+		randomize_stats(me, 0, .2)
+	
+	func randomize_stats(me : N_Creature, inc : float, std : float) -> void:
+		var poss_spr1 = [
+			Game.try_get_image(Game.texture_dict, "torso (1)"),
+			Game.try_get_image(Game.texture_dict, "torso (2)"),
+			Game.try_get_image(Game.texture_dict, "torso (3)"),
+			Game.try_get_image(Game.texture_dict, "torso (4)"),
+			Game.try_get_image(Game.texture_dict, "torso (5)"),
+			Game.try_get_image(Game.texture_dict, "torso (6)"),
+		]
+		var poss_spr2 = [
+			Game.try_get_image(Game.texture_dict, "eyes (1)"),
+			Game.try_get_image(Game.texture_dict, "eyes (2)"),
+			Game.try_get_image(Game.texture_dict, "eyes (3)"),
+			Game.try_get_image(Game.texture_dict, "eyes (4)"),
+			Game.try_get_image(Game.texture_dict, "eyes (5)"),
+			Game.try_get_image(Game.texture_dict, "eyes (6)"),
+		]
+		me.sprite.texture = Game.get_random_element_from_array(poss_spr1, Game.rng_cosmetic)
+		me.sprite2.texture = Game.get_random_element_from_array(poss_spr2, Game.rng_cosmetic)
+		me.sprite2.modulate = team_color + Color(Game.rng_cosmetic.randfn(0.0, std), Game.rng_cosmetic.randfn(0.0, std), Game.rng_cosmetic.randfn(0.0, std))
+		me.sprite.modulate = team_color + Color(Game.rng_cosmetic.randfn(0.0, std), Game.rng_cosmetic.randfn(0.0, std), Game.rng_cosmetic.randfn(0.0, std))
+		get_stat(D_Stats.Health).change_value(Game.rng_game.randfn(inc, std))
+		get_stat(D_Stats.Speed).change_value(Game.rng_game.randfn(inc, std))
+		get_stat(D_Stats.Patience).change_value(Game.rng_game.randfn(inc, std))
+		get_stat(D_Stats.Mood).change_value(Game.rng_game.randfn(inc, std))
+		get_stat(D_Stats.Intelligence).change_value(Game.rng_game.randfn(inc, std))
 	
 	
 	func get_stat(type : Variant) -> D_Stats.Stat:
@@ -202,8 +249,11 @@ class CreatureData:
 		var max_signal_dist = 10.0
 		if distance > max_signal_dist:
 			return
+		
+		#Util.shake(me.sprite, .5, .01)
 			
 		var can_pass : bool = true
+		
 		for stat : D_Stats.Stat in stats.values():
 			if !stat.on_signal(me, pos, xsignal):
 				can_pass = false
@@ -250,21 +300,31 @@ class CreatureData:
 		if get_stat(D_Stats.Health).value <= 0.0:
 			me.kill_me()
 		
-		
+	
 		
 	func on_pickup_item(me : N_Creature, item : N_Item) -> void:
 		if !me.item_picked_up and !item.picked_up_by:
 			me.item_picked_up = item
 			me.item_picked_up.picked_up_by = me
 			Util.shake(me.item_picked_up.sprite)
-			
+		
+	func on_death(me : N_Creature) -> void:
+		return
 			
 class Player extends CreatureData:
-	pass
+	func on_ready(me : N_Creature) -> void:
+		team = 0
+		team_color = Color.BLUE
+		randomize_stats(me, 0, .2)
+		
 class Enemy extends CreatureData:
-	func _init() -> void:
+	
+		
+	func on_ready(me : N_Creature) -> void:
 		team = 1
+		team_color = Color.RED
 		get_stat(D_Stats.Speed).set_value(3.0)
+		randomize_stats(me, 0, .2)
 	
 	func reset_target(me : N_Creature) -> void:
 		return
@@ -273,18 +333,25 @@ class Enemy extends CreatureData:
 		return
 		
 	
-	var target_creature : N_Creature = null
+	var target_creature_or_building : N_Abstract = null
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
 		find_target(me)
 		movement(me, delta)
 		check_attack(me)
 		
 	func check_attack(me : N_Creature) -> void:
-		if !target_creature:
+		if !target_creature_or_building:
 			return
-		var distance = me.global_position.distance_to(target_creature.global_position)
-		if distance <= 2.0:
-			attack(me, target_creature)
+		var distance = me.global_position.distance_to(target_creature_or_building.global_position)
+		
+		if target_creature_or_building is N_Creature:
+			if distance <= 2.0:
+				Audio.play_sound(Audio.AudioName.Hit, 1.0)
+				attack(me, target_creature_or_building)
+		if target_creature_or_building is N_Building:
+			if distance <= 4.0:
+				Audio.play_sound(Audio.AudioName.Hit, 1.0)
+				attack_building(me, target_creature_or_building)
 			
 
 	
@@ -292,21 +359,63 @@ class Enemy extends CreatureData:
 
 	func find_target(me : N_Creature):
 		var lowest_dist : float = 9999999999.9
-		var closest_target : N_Creature = null
-		for e : N_Creature in Game.get_creatures_by_emotion(null):
+		var closest_target : N_Abstract = null
+		var creatures := Game.get_creatures_by_emotion(null)
+		var buildings := Game.get_buildings()
+		var pot_targets : Array[N_Abstract] = []
+		for c in creatures:
+			pot_targets.append(c)
+		for b in buildings:
+			pot_targets.append(b)
+			
+		for e : N_Abstract in pot_targets:
 			var dist = e.global_position.distance_to(me.global_position)
 			if dist >= lowest_dist:
 				continue
 			if e == me:
 				continue
-			if e.data.team == team:
-				continue
+			if e is N_Creature:
+				if e.data.team == team:
+					continue
 			lowest_dist = dist
 			closest_target = e
 			
 		if closest_target:
-			target_creature = closest_target
+			target_creature_or_building = closest_target
 			target = closest_target.global_position
+		else:
+			target = me.global_position
 		
 	func on_pickup_item(me : N_Creature, item : N_Item) -> void:
 		return
+		
+	func on_death(me : N_Creature) -> void:
+		var rngvalue = Game.rng_game.randf_range(0.0, 1.0)
+		if rngvalue < .6:
+			Game.spawn_item(me.global_position)
+		
+	func attack_building(me : N_Creature, victim : N_Building) -> void:
+		
+		var dir = (victim.global_position - me.global_position).normalized()
+		dir.y *= .02
+		var power = 40
+		
+		victim.linear_velocity += dir * power
+		me.linear_velocity += -dir * power
+		
+		Particle.spawn_particle(Particle.ParticleType.Hit, me.global_position)
+		Util.shake(me.sprite, .2, invincibility_time_on_attack)
+		Util.expand_shrink(me.sprite, 1.0, invincibility_time_on_attack)
+		
+		
+		
+		Util.shake(victim.sprite, .2, invincibility_time_on_attack)
+		Util.expand_shrink(victim.sprite, 1.0, invincibility_time_on_attack)
+		
+		Particle.spawn_particle(Particle.ParticleType.Hit, victim.global_position)
+		
+		victim.health.change_value(-1.0)
+		#print(victim.health.value)
+		if victim.health.value <= 0.0:
+			victim.kill_me()
+		

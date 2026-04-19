@@ -1,13 +1,14 @@
 extends Camera3D
 
 @onready var inspect : Node3D = %Inspect
-var inspect_offset : Vector3 = Vector3(-4, 0, 0)
+var inspect_offset : Vector3 = Vector3(-6, 0, 0)
 var inspect_base_pos : Vector3
 var inspect_target_pos : Vector3
 
 @onready var main_label : Label3D = %MainLabel
 @onready var sub_label : Label3D = %SubLabel
-
+@onready var sub_label2 : Label3D = %SubLabel2
+@onready var sub_label3 : Label3D = %SubLabel3
 @onready var sub_cam : Camera3D = %SubViewCamera
 
 @onready var daytimer : Sprite3D = %DayTimer
@@ -25,8 +26,8 @@ func _ready() -> void:
 	
 func allocate_ui_stats() -> void:
 	var maxr = 5
-	var ui_stat_size : float = .7
-	var ui_stat_increment : float = .5
+	var ui_stat_size : float = .6
+	var ui_stat_increment : float = .4
 	for i in range(maxr):
 		var instance = Game.ui_stat_prefab.instantiate()
 		playerinfo.add_child(instance)
@@ -57,6 +58,8 @@ func _physics_process(delta: float) -> void:
 	set_subview_cam()
 	set_day_timer()
 	
+	sub_label2.text = "Day: " + str(Game.day) +  "\nGlorbles left: " + str(Game.get_creatures_by_team(0).size())
+	sub_label3.text = "\n\bBuilding Status:\n " + Game.building_status
 func _process(delta: float) -> void:
 	inspect.position = Game.update_lerp(inspect.position, inspect_target_pos, 10, delta)
 	
@@ -77,7 +80,6 @@ func _input(event: InputEvent) -> void:
 		if collider as N_Building:
 			inspect_building(collider)
 			return
-		Game.inspect_enabled = false
 		return
 		
 
@@ -101,7 +103,7 @@ func set_subview_cam() -> void:
 
 func inspect_creature(creature : N_Creature) -> void:
 	Game.inspect_enabled = true
-	main_label.text = "name: " + creature.data.name.substr(3)
+	main_label.text = "name: " + creature.data.name.substr(1)
 	sub_label.text = "emotion: " + creature.emotion.name
 	target_cam_pos = creature.sprite
 	
@@ -117,6 +119,7 @@ func inspect_creature(creature : N_Creature) -> void:
 func inspect_item(item : N_Item) -> void:
 	Game.inspect_enabled = true
 	main_label.text = item.data.name
+	sub_label.text = item.data.desc
 	target_cam_pos = item.sprite
 	for stat in inspect_ui_stats:
 		stat.visible = false
@@ -124,7 +127,8 @@ func inspect_item(item : N_Item) -> void:
 	
 func inspect_building(building : N_Building) -> void:
 	Game.inspect_enabled = true
-	#main_label.text = building.data.name
+	main_label.text = "Building"
+	sub_label.text = building.get_desc()
 	target_cam_pos = building.sprite
 	for stat in inspect_ui_stats:
 		stat.visible = false

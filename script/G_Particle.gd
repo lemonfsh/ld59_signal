@@ -11,6 +11,8 @@ enum ParticleType {
 	Diverge,
 	Die,
 	Hit,
+	BuildingAttack,
+	BuildingAttacked,
 }
 
 var lookup_dict : Dictionary[ParticleType, PackedScene] = {
@@ -18,6 +20,8 @@ var lookup_dict : Dictionary[ParticleType, PackedScene] = {
 	ParticleType.Diverge : preload("res://scenes/p_diverge.tscn"),
 	ParticleType.Die : preload("res://scenes/p_die.tscn"),
 	ParticleType.Hit : preload("res://scenes/p_hit.tscn"),
+	ParticleType.BuildingAttack : preload("res://scenes/p_buildingattack.tscn"),
+	ParticleType.BuildingAttacked : preload("res://scenes/p_building_attacked.tscn"),
 }
 
 

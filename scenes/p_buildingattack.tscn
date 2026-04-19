@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://d07gej8ifw5rv"]
+
+[ext_resource type="Texture2D" uid="uid://dhmcsd7nqt2l0" path="res://textures/particle.png" id="1_evwj5"]
+[ext_resource type="Script" uid="uid://c4ldl7br4st73" path="res://script/N_Particle.gd" id="2_f248r"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_evwj5"]
+transparency = 1
+albedo_color = Color(1, 1, 0, 1)
+albedo_texture = ExtResource("1_evwj5")
+
+[sub_resource type="QuadMesh" id="QuadMesh_f248r"]
+material = SubResource("StandardMaterial3D_evwj5")
+orientation = 1
+
+[node name="particle" type="CPUParticles3D" unique_id=1526017211]
+amount = 72
+lifetime = 1.06
+explosiveness = 0.33
+mesh = SubResource("QuadMesh_f248r")
+spread = 22.06
+flatness = 0.9
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 3.0
+linear_accel_min = -4.0
+linear_accel_max = -4.0
+scale_amount_min = 0.5
+scale_amount_max = 0.6
+script = ExtResource("2_f248r")

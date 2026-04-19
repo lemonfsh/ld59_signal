@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://b6kg5vsymokbq"]
 
 [ext_resource type="Script" uid="uid://fau3uiuase5b" path="res://script/N_Creature.gd" id="1_upmfi"]
-[ext_resource type="Texture2D" uid="uid://g6tenwh7n125" path="res://textures/tile4.png" id="2_bvms0"]
+[ext_resource type="Texture2D" uid="uid://bc2rh7gr3e1oj" path="res://textures/torso (1).png" id="2_7obff"]
+[ext_resource type="Texture2D" uid="uid://4jjgqc6k4yys" path="res://textures/eyes (1).png" id="3_rl551"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_ryrav"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_7obff"]
+radius = 0.8
 
 [node name="Creature" type="RigidBody3D" unique_id=880352942 groups=["creatures"]]
 gravity_scale = 0.0
@@ -11,9 +13,16 @@ angular_damp = 2.0
 script = ExtResource("1_upmfi")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=158133445]
-shape = SubResource("SphereShape3D_ryrav")
+shape = SubResource("SphereShape3D_7obff")
 
 [node name="Sprite" type="Sprite3D" parent="." unique_id=1260361128]
 unique_name_in_owner = true
-pixel_size = 0.003
-texture = ExtResource("2_bvms0")
+texture_filter = 0
+texture = ExtResource("2_7obff")
+
+[node name="Sprite2" type="Sprite3D" parent="." unique_id=1655789373]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+sorting_offset = 0.1
+texture_filter = 0
+texture = ExtResource("3_rl551")

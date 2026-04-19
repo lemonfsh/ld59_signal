@@ -15,6 +15,7 @@ class Stat:
 	func display_me() -> bool:
 		return true
 	signal value_changed
+	var base_value : float
 	var value : float 
 	var temporary_value_delta : float = 0.0
 			
@@ -53,7 +54,7 @@ class Health extends Stat:
 	func display_me() -> bool:
 		return false
 	func _init() -> void:
-		ui_image_path = "wing"
+		ui_image_path = "heart"
 		value = 3.0
 		
 class Speed extends Stat:
@@ -62,40 +63,49 @@ class Speed extends Stat:
 		value = 10.0
 
 class Patience extends Stat:
-	var base_mood_subtract = 20.0
 	func _init() -> void:
-		ui_image_path = "wing"
+		ui_image_path = "patience"
+		base_value = 20.0
 		value = 10.0
 	func on_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
-		me.data.get_stat(Mood).change_value(-(base_mood_subtract - value))
+		me.data.get_stat(Mood).change_value(-(base_value - value))
 		return true
 		
 class Mood extends Stat:
 	func _init() -> void:
-		ui_image_path = "wing"
+		ui_image_path = "mood"
 		value = 100.0
 	func set_value(new_value : float) -> void:
 		value = new_value
 		if new_value <= 0.0:
 			var me : N_Creature = Game.find_creature_by_stat(self)
 			if me and me.emotion is N_Creature.Content:
-				me.change_emotion(N_Creature.Angry.new())
+				var chance = Game.rng_game.randf_range(0.0, me.data.get_stat(D_Stats.Patience).base_value)
+				if chance > me.data.get_stat(D_Stats.Patience).value:
+					me.change_emotion(N_Creature.Angry.new())
+				else:
+					value = 150
 		if new_value >= 200.0:
 			var me : N_Creature = Game.find_creature_by_stat(self)
-			if me and me.emotion is N_Creature.Content:
-				me.change_emotion(N_Creature.Sad.new())
+			if me and me.emotion is N_Creature.Content and Game.game_started:
+				var chance = Game.rng_game.randf_range(0.0, me.data.get_stat(D_Stats.Patience).base_value)
+				if chance > me.data.get_stat(D_Stats.Patience).value:
+					me.change_emotion(N_Creature.Sad.new())
+				else:
+					value = 150
 		value_changed.emit()
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
-		change_value(+.2)
+		change_value(.18)
 
 class Intelligence extends Stat:
-	var max_int_sub := 100.0
 	func _init() -> void:
 		ui_image_path = "confused"
-		value = 80.0
+		base_value = 100.0
+		value = 95.0
 	func on_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
 		var rng_value = Game.rng_game.randf_range(0, 100.0)
-		if (max_int_sub - value) > rng_value:
+		if (base_value - value) > rng_value:
+			Audio.play_sound(Audio.AudioName.Ignore, 1.0)
 			activate_me()
 			return false 
 		return true

@@ -4,22 +4,63 @@ extends Node3D
 var rng_game : RandomNumberGenerator = RandomNumberGenerator.new()
 var rng_cosmetic : RandomNumberGenerator = RandomNumberGenerator.new()
 
-var texture_dict : Dictionary[String, Texture2D]
+var texture_dict : Dictionary[String, Texture2D] = {
+	"angry" : preload("res://textures/angry.png"),
+	"confused" : preload("res://textures/confused.png"),
+	"cursor1" : preload("res://textures/cursor1.png"),
+	"cursor2" : preload("res://textures/cursor2.png"),
+	"cursor3" : preload("res://textures/cursor3.png"),
+	"hammer" : preload("res://textures/hammer.png"),
+	"heart" : preload("res://textures/heart.png"),
+	"holding" : preload("res://textures/holding.png"),
+	"metal" : preload("res://textures/metal.png"),
+	"mood" : preload("res://textures/mood.png"),
+	"particle" : preload("res://textures/particle.png"),
+	"patience" : preload("res://textures/patience.png"),
+	"sad" : preload("res://textures/sad.png"),
+	"stone" : preload("res://textures/stone.png"),
+	"wing" : preload("res://textures/wing.png"),
+	"wood" : preload("res://textures/wood.png"),
+	"BUILD1" : preload("res://textures/BUILD1.png"),
+	"BUILD2" : preload("res://textures/BUILD2.png"),
+	"BUILD3" : preload("res://textures/BUILD3.png"),
+	"BUILD4" : preload("res://textures/BUILD4.png"),
+	"eyes (1)" : preload("res://textures/eyes (1).png"),
+	"eyes (2)" : preload("res://textures/eyes (2).png"),
+	"eyes (3)" : preload("res://textures/eyes (3).png"),
+	"eyes (4)" : preload("res://textures/eyes (4).png"),
+	"eyes (5)" : preload("res://textures/eyes (5).png"),
+	"eyes (6)" : preload("res://textures/eyes (6).png"),
+	"torso (1)" : preload("res://textures/torso (1).png"),
+	"torso (2)" : preload("res://textures/torso (2).png"),
+	"torso (3)" : preload("res://textures/torso (3).png"),
+	"torso (4)" : preload("res://textures/torso (4).png"),
+	"torso (5)" : preload("res://textures/torso (5).png"),
+	"torso (6)" : preload("res://textures/torso (6).png"),
+}
 
 var inspect_enabled : bool = false
 
 func _ready() -> void:
-	texture_dict = load_textures_in_folder("res://textures/")
 	for i in range(100):
 		spawn_creature(Vector3(rng_game.randf_range(-4, 4), 5, rng_game.randf_range(-4, 4)))
-	for i in range(20):
-		spawn_item(Vector3(rng_game.randf_range(-20, 20), 5, rng_game.randf_range(-20, 20)))
+	var a : float = 15
+	spawn_some_items(Vector3(-a, 4, -a), 10)
+	spawn_some_items(Vector3(-a, 4, a), 10)
+	spawn_some_items(Vector3(a, 4, -a), 10)
+	spawn_some_items(Vector3(a, 4, a), 10)
+		
+func spawn_some_items(offset : Vector3, num : int) -> void:
+	var rng_offset : float = 7.0
+	for i in range(num):
+		spawn_item(offset + Vector3(rng_game.randf_range(-rng_offset, rng_offset), 0, rng_game.randf_range(-rng_offset, rng_offset)))
 	
 var ui_stat_prefab : PackedScene = preload("res://scenes/ui_stat.tscn")
 	
 var creature_prefab : PackedScene = preload("res://scenes/creature.tscn")
-func spawn_creature(pos : Vector3) -> N_Creature:
+func spawn_creature(pos : Vector3, data : N_Creature.CreatureData = N_Creature.Player.new()) -> N_Creature:
 	var instance : N_Creature = creature_prefab.instantiate()
+	instance.data = data
 	add_child(instance)
 	instance.global_position = pos
 	return instance
@@ -32,28 +73,52 @@ func spawn_item(pos : Vector3) -> N_Item:
 	return instance
 
 var building_prefab : PackedScene = preload("res://scenes/building.tscn")
-func spawn_building(pos : Vector3) -> N_Building:
+func spawn_building(pos : Vector3, madefrom : Array[N_Item.Item]) -> N_Building:
 	var instance : N_Building = building_prefab.instantiate()
+	instance.made_from = madefrom
 	add_child(instance)
 	instance.global_position = pos
 	return instance
 
 
-
+var days_scaling : float :
+	get():
+		return pow(log(day + 10) / log(10), 9)
+		
 var day : int = 0
 var day_progress : float = 0.0
 
+var game_started : bool = false
+
 func _physics_process(delta: float) -> void:
-	do_day_progress(delta)
+	if game_started:
+		do_day_progress(delta)
 	check_for_building(delta)
-		
+	
+	
+func check_for_gameend(delta : float) -> void:
+	var cr := Game.get_creatures_by_team(0)
+	if cr.size() <= 0:
+		Util.log_this("You lost..", Vector3(0, 20, 0), Color.CORAL, 2.0, 5.0)
+	
+func _process(delta: float) -> void:
+	if Input.is_action_pressed("speedup"):
+		print("yes")
+		Engine.time_scale = 5.0
+	else:
+		Engine.time_scale = 1.0
+
 func do_day_progress(delta: float) -> void:
-	day_progress += delta * .01
+	day_progress += delta * .035
 	if day_progress >= 1.0:
 		day_progress = 0.0
 		day += 1
+		start_day.emit()
+		
+signal start_day
 	
-var building_status : String = "Not enough creatures with items.."
+var building_status : String = "Not enough glorbles with items.."
+var building_status_color : Color = Color.RED
 var building : bool = false
 func check_for_building(delta: float) -> void:
 	var creatures := Game.get_creatures_by_emotion(null)
@@ -71,35 +136,45 @@ func check_for_building(delta: float) -> void:
 	
 	var valid : bool = true
 	if creatures_with_items.size() <= 4:
-		building_status = "Not enough creatures with items.."
+		building_status = "Not enough glorbles with items.."
+		building_status_color = Color.RED
 		valid = false
 		return
 	for creature in creatures_with_items:
 		if creature.global_position.distance_to(center_of_itemed_creatures) > max_radius:
-			building_status = "Creatures are too far away from each other to build.."
+			building_status = "Glorbles are too far away from each other to build.."
+			building_status_color = Color.DARK_ORANGE
 			valid = false
 			return
 		
 	start_building(creatures_with_items, center_of_itemed_creatures)
-	DebugDraw3D.draw_sphere(center_of_itemed_creatures, 10.0, Color.GREEN if valid else Color.RED, delta)
+	#DebugDraw3D.draw_sphere(center_of_itemed_creatures, 10.0, Color.GREEN if valid else Color.RED, delta)
 
 func start_building(itemed_creatures : Array[N_Creature], center : Vector3) -> void:
 	if building:
 		return
 	building = true
 	building_status = "Building..."
+	building_status_color = Color.GREEN
 	var build_icon = try_get_image(texture_dict, "hammer")
 	var time : float = 1.5
+	Audio.play_sound(Audio.AudioName.Build, 1.0)
 	Util.log_this("1/3", center, Color.WHITE, 1.0, time, build_icon)
 	await Util.create_timer(time)
+	Audio.play_sound(Audio.AudioName.Build, 1.0)
 	Util.log_this("2/3", center, Color.WHITE, 1.0, time, build_icon)
 	await Util.create_timer(time)
+	Audio.play_sound(Audio.AudioName.Build, 1.0)
 	Util.log_this("3/3", center, Color.WHITE, 1.0, time, build_icon)
 	
+	var madefrom : Array[N_Item.Item] = []
 	for creature in itemed_creatures:
-		creature.item_picked_up.kill_me()
-		creature.item_picked_up = null
-	var instance := spawn_building(center)
+		if creature:
+			madefrom.append(creature.item_picked_up.data)
+			creature.item_picked_up.kill_me()
+			creature.item_picked_up = null
+	var instance := spawn_building(center, madefrom)
+	print("spawned building")
 	instance.start_pos = center
 	building = false
 	return
@@ -168,29 +243,29 @@ func camera_raycast_all(length : float) -> Dictionary:
 func parse_float(value : float, precision : float = .1) -> String:
 	return str(snappedf(value, precision))
 	
-func load_textures_in_folder(path: String) -> Dictionary[String, Texture2D]:
-	var directory = DirAccess.open(path)
-	var textures: Dictionary[String, Texture2D] = {}
-	
-	if directory:
-		directory.list_dir_begin()
-		var file_name = directory.get_next()
-		
-		while file_name != "":
-			if !directory.current_is_dir():
-				if file_name.ends_with(".png") or file_name.ends_with(".jpg") or file_name.ends_with(".jpeg"):
-					var texture_path = path + file_name
-					var texture = load(texture_path)
-					if texture is Texture2D:
-						var key = file_name.get_basename()
-						textures[key] = texture
-					
-			file_name = directory.get_next()
-		directory.list_dir_end()
-	else:
-		push_error("An error occurred when trying to access path: " + path)
-		
-	return textures
+#func load_textures_in_folder(path: String) -> Dictionary[String, Texture2D]:
+	#var directory = DirAccess.open(path)
+	#var textures: Dictionary[String, Texture2D] = {}
+	#
+	#if directory:
+		#directory.list_dir_begin()
+		#var file_name = directory.get_next()
+		#
+		#while file_name != "":
+			#if !directory.current_is_dir():
+				#var texture_path = path + file_name
+				#if ResourceLoader.exists(texture_path, "Texture2D"):
+					#var texture = load(texture_path)
+					#if texture is Texture2D:
+						#var key = file_name.get_basename()
+						#textures[key] = texture
+					#
+			#file_name = directory.get_next()
+		#directory.list_dir_end()
+	#else:
+		#push_error("An error occurred when trying to access path: " + path)
+		#
+	#return textures
 	
 func try_get_image(dict : Dictionary, key : String) -> Texture2D:
 	if dict.has(key):
@@ -250,12 +325,32 @@ func get_creatures_by_emotion(emotion : Variant) -> Array[N_Creature]:
 		return_me.append(creature)
 	return return_me
 
+func get_creatures_by_team(team : int) -> Array[N_Creature]:
+	var creatres := Game.get_creatures_by_emotion(null)
+	var playercr : Array[N_Creature] = []
+	for cr in creatres:
+		if cr.data.team == team:
+			playercr.append(cr)
+	return playercr
+
+func get_buildings() -> Array[N_Building]:
+	var return_me : Array[N_Building] = []
+	var creatures = Game.get_tree().get_nodes_in_group("buildings")
+	for cr in creatures:
+		if cr is not N_Building:
+			continue
+		var creature = cr as N_Building
+		return_me.append(creature)
+	return return_me
+	
 const CREATURE_NAMES_FILE_PATH : String = "res://other/creature_names.txt"
 
 func get_random_creature_name() -> String:
 	var file = FileAccess.open(CREATURE_NAMES_FILE_PATH, FileAccess.READ)
 	var content = file.get_as_text()
 	var as_array = content.split(",")
+	# last one is always blank for some reason
+	as_array.remove_at(as_array.size() - 1)
 	var selected_name = get_random_element_from_array(as_array, rng_cosmetic)
 	return selected_name
 	
