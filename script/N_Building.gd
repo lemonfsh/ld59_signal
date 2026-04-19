@@ -107,6 +107,8 @@ func attack() -> void:
 	
 	Particle.spawn_particle(Particle.ParticleType.BuildingAttacked, rand_chosen_cr.global_position + offset)
 	
+	Audio.play_sound(Audio.AudioName.Buildattack, 1.0)
+	
 	Util.shake(sprite)
 	Util.expand_shrink(sprite, .2, .2)
 	return

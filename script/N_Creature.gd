@@ -306,7 +306,9 @@ class CreatureData:
 		if !me.item_picked_up and !item.picked_up_by:
 			me.item_picked_up = item
 			me.item_picked_up.picked_up_by = me
+			me.item_picked_up.holding.modulate = team_color
 			Util.shake(me.item_picked_up.sprite)
+			Audio.play_sound(Audio.AudioName.Pickup, 1.0)
 		
 	func on_death(me : N_Creature) -> void:
 		return
@@ -314,7 +316,7 @@ class CreatureData:
 class Player extends CreatureData:
 	func on_ready(me : N_Creature) -> void:
 		team = 0
-		team_color = Color.BLUE
+		team_color = Game.player_color
 		randomize_stats(me, 0, .2)
 		
 class Enemy extends CreatureData:

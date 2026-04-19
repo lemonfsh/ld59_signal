@@ -46,7 +46,7 @@ var minimum_volume : float = .01
 var total_sound_mult : float = .6
 ## There are {audio_sources} number of audio sources, when play_sound is called it tries to find one that currently isnt playing anything
 ## if it does find one, it plays the audio on that one. if it doesnt, the audio doesnt play, and we need more audio sources. 
-func play_sound(sound : AudioName, volume : float, pitch_rng_range : float = 0.05):
+func play_sound(sound : AudioName, volume : float, pitch_rng_range : float = 0.1):
 	var sound_itself = audio_dictionary.get(sound)
 	if !sound_itself:
 		push_warning("TRIED TO PLAY INVALID SOUND OF TYPE: ", sound)

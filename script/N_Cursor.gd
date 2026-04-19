@@ -38,7 +38,7 @@ func _input(event: InputEvent) -> void:
 			var pos = raycast.get("position")
 			pos.y = 4.0
 			Game.signal_emitted.emit(pos, Game.Converge.new())
-			Audio.play_sound(Audio.AudioName.Converge, .5)
+			Audio.play_sound(Audio.AudioName.Converge, .1)
 			Particle.spawn_particle(Particle.ParticleType.Converge, pos)
 	if event.is_action_released("leftclick"):
 		type = CursorType.Normal
@@ -52,7 +52,7 @@ func _input(event: InputEvent) -> void:
 			var pos = raycast.get("position")
 			pos.y = 4.0
 			Game.signal_emitted.emit(pos, Game.Diverge.new())
-			Audio.play_sound(Audio.AudioName.Diverge, .5)
+			Audio.play_sound(Audio.AudioName.Diverge, .1)
 			Particle.spawn_particle(Particle.ParticleType.Diverge, pos)
 	if event.is_action_released("rightclick"):
 		type = CursorType.Normal

@@ -42,6 +42,7 @@ var texture_dict : Dictionary[String, Texture2D] = {
 var inspect_enabled : bool = false
 
 func _ready() -> void:
+	player_color = Game.get_random_element_from_array(poss_player_colors, Game.rng_cosmetic)
 	spawn_stuff()
 	
 func spawn_stuff() -> void:
@@ -99,6 +100,8 @@ func _physics_process(delta: float) -> void:
 	check_for_building(delta)
 	check_for_gameend(delta)
 	
+var poss_player_colors = [Color.SKY_BLUE, Color.WEB_PURPLE, Color.FUCHSIA, Color.AQUA, Color.SEA_GREEN]
+var player_color : Color = Color.SKY_BLUE
 
 var game_ended : bool = false
 func check_for_gameend(delta : float) -> void:
@@ -117,6 +120,7 @@ func check_for_gameend(delta : float) -> void:
 		inspect_enabled = false
 		building_status = "Not enough glorbles with items.."
 		building_status_color = Color.RED
+		player_color = Game.get_random_element_from_array(poss_player_colors, Game.rng_cosmetic)
 		building = false
 		spawn_stuff()
 	
