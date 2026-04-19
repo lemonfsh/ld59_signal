@@ -1,4 +1,4 @@
-extends RigidBody3D
+extends N_Abstract
 class_name N_Creature
 
 @onready var sprite : Sprite3D = %Sprite
@@ -41,10 +41,7 @@ func on_signal(pos : Vector3, xsignal : Game.XSignal) -> void:
 	
 var item_picked_up : N_Item = null
 func on_pickup_item(item : N_Item) -> void:
-	if !item_picked_up and !item.picked_up_by:
-		item_picked_up = item
-		item_picked_up.picked_up_by = self
-		Util.shake(item_picked_up.sprite)
+	data.on_pickup_item(self, item)
 	
 func control_item(delta : float) -> void:
 	if !item_picked_up:
@@ -224,8 +221,42 @@ class CreatureData:
 			dir.y = -0.1
 			target = me.global_position + dir
 			
-			
-			
+	func attack(me : N_Creature, victim : N_Creature) -> void:
+		if victim.data.invincible_timer > 0.0:
+			return
+		victim.data.invincible_timer = victim.data.invincibility_time_on_attack
+		var dir = (victim.global_position - me.global_position).normalized()
+		dir.y *= .02
+		var power = 40
+		
+		victim.linear_velocity += dir * power
+		me.linear_velocity += -dir * power
+		
+		Particle.spawn_particle(Particle.ParticleType.Hit, me.global_position)
+		Util.shake(me.sprite, .2, invincibility_time_on_attack)
+		Util.expand_shrink(me.sprite, 1.0, invincibility_time_on_attack)
+		
+		
+		
+		victim.data.damage_me(victim)
+
+	func damage_me(me : N_Creature) -> void:
+		Util.shake(me.sprite, .2, invincibility_time_on_attack)
+		Util.expand_shrink(me.sprite, 1.0, invincibility_time_on_attack)
+		
+		Particle.spawn_particle(Particle.ParticleType.Hit, me.global_position)
+		
+		get_stat(D_Stats.Health).change_value(-1.0)
+		if get_stat(D_Stats.Health).value <= 0.0:
+			me.kill_me()
+		
+		
+		
+	func on_pickup_item(me : N_Creature, item : N_Item) -> void:
+		if !me.item_picked_up and !item.picked_up_by:
+			me.item_picked_up = item
+			me.item_picked_up.picked_up_by = me
+			Util.shake(me.item_picked_up.sprite)
 			
 			
 class Player extends CreatureData:
@@ -233,6 +264,7 @@ class Player extends CreatureData:
 class Enemy extends CreatureData:
 	func _init() -> void:
 		team = 1
+		get_stat(D_Stats.Speed).set_value(3.0)
 	
 	func reset_target(me : N_Creature) -> void:
 		return
@@ -255,23 +287,7 @@ class Enemy extends CreatureData:
 			attack(me, target_creature)
 			
 
-	func attack(me : N_Creature, victim : N_Creature) -> void:
-		
-		if victim.data.invincible_timer > 0.0:
-			return
-		victim.data.invincible_timer = victim.data.invincibility_time_on_attack
-		var dir = (victim.global_position - me.global_position).normalized()
-		dir.y *= .02
-		var power = 20
-		print("attacked ")
-		victim.linear_velocity += dir * power
-		me.linear_velocity += -dir * power
-		Util.shake(me.sprite, .2, invincibility_time_on_attack)
-		Util.expand_shrink(me.sprite, 1.0, invincibility_time_on_attack)
-		
-		victim.data.get_stat(D_Stats.Health).change_value(-1.0)
-		if victim.data.get_stat(D_Stats.Health).value <= 0.0:
-			victim.kill_me() 
+	
 
 
 	func find_target(me : N_Creature):
@@ -291,4 +307,6 @@ class Enemy extends CreatureData:
 		if closest_target:
 			target_creature = closest_target
 			target = closest_target.global_position
-			
+		
+	func on_pickup_item(me : N_Creature, item : N_Item) -> void:
+		return
