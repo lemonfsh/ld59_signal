@@ -48,6 +48,7 @@ func _physics_process(delta: float) -> void:
 	set_day_timer()
 	
 	sub_label2.text = "Day: " + str(Game.day) +  "\nGlorbles left: " + str(Game.get_creatures_by_team(0).size())
+	sub_label3.modulate = Game.building_status_color
 	sub_label3.text = "\n\bBuilding Status:\n " + Game.building_status
 func _process(delta: float) -> void:
 	inspect.position = Game.update_lerp(inspect.position, inspect_target_pos, 10, delta)

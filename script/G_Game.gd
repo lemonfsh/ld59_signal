@@ -115,6 +115,7 @@ func check_for_gameend(delta : float) -> void:
 			child.queue_free()
 		get_tree().reload_current_scene()
 		game_started = false
+		game_ended = false
 		day = 0
 		day_progress = 0
 		inspect_enabled = false
@@ -150,11 +151,7 @@ func check_for_building(delta: float) -> void:
 		if creature.item_picked_up:
 			creatures_with_items.append(creature)
 	
-	var center_of_itemed_creatures : Vector3 = Vector3.ZERO
-	for creature in creatures_with_items:
-		center_of_itemed_creatures += creature.global_position
-	center_of_itemed_creatures /= creatures_with_items.size()
-	var max_radius : float = 10.0
+	
 	
 	
 	var valid : bool = true
@@ -163,16 +160,32 @@ func check_for_building(delta: float) -> void:
 		building_status_color = Color.RED
 		valid = false
 		return
-	for creature in creatures_with_items:
-		if creature.global_position.distance_to(center_of_itemed_creatures) > max_radius:
-			building_status = "Glorbles are too far away from each other to build.."
-			building_status_color = Color.DARK_ORANGE
-			valid = false
-			return
-		
-	start_building(creatures_with_items, center_of_itemed_creatures)
+	var points : Array[Vector3] = []
+	var has_cluster_nodes : Array[N_Creature] = find_cluster(creatures_with_items, 5, 15.0)
+	if has_cluster_nodes.size() <= 0:
+		building_status = "Glorbles are too far away from each other to build.."
+		building_status_color = Color.DARK_ORANGE
+		valid = false
+		return
+	
+	var center_of_itemed_creatures : Vector3 = Vector3.ZERO
+	for creature in has_cluster_nodes:
+		center_of_itemed_creatures += creature.global_position
+	center_of_itemed_creatures /= has_cluster_nodes.size()
+	
+	start_building(has_cluster_nodes, center_of_itemed_creatures)
 	#DebugDraw3D.draw_sphere(center_of_itemed_creatures, 10.0, Color.GREEN if valid else Color.RED, delta)
 
+func find_cluster(nodes: Array[N_Creature], n: int, r: float) -> Array[N_Creature]:
+	for i in range(nodes.size()):
+		var cluster: Array[N_Creature] = [nodes[i]]
+		for j in range(nodes.size()):
+			if i != j and nodes[i].global_position.distance_to(nodes[j].global_position) <= r:
+				cluster.append(nodes[j])
+		if cluster.size() >= n:
+			return cluster
+	return []
+	
 func start_building(itemed_creatures : Array[N_Creature], center : Vector3) -> void:
 	if building:
 		return

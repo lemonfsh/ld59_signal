@@ -246,11 +246,9 @@ class CreatureData:
 	
 	func on_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> void:
 		var distance = me.global_position.distance_to(pos)
-		var max_signal_dist = 10.0
+		var max_signal_dist = 15.0
 		if distance > max_signal_dist:
 			return
-		
-		#Util.shake(me.sprite, .5, .01)
 			
 		var can_pass : bool = true
 		

@@ -20,7 +20,7 @@ func _ready() -> void:
 	if !data:
 		data = Building.new()
 	start_pos = global_position
-	health.set_value(10.0)
+	health.set_value(20.0)
 	process_made_from()
 		
 	var rand_sprites = [
