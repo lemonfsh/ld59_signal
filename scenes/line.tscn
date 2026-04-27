@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c6bax4kyvr220"]
+
+[ext_resource type="Script" uid="uid://cwlmy4hqgtt7y" path="res://script/N_Line.gd" id="1_pdjlr"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" unique_id=257810919]
+script = ExtResource("1_pdjlr")

@@ -83,11 +83,12 @@ func spawn_building(pos : Vector3, madefrom : Array[N_Item.Item]) -> N_Building:
 	add_child(instance)
 	instance.global_position = pos
 	return instance
-
+	
+signal creature_died(pos : Vector3, creature : N_Creature)
 
 var days_scaling : float :
 	get():
-		return pow(log(day + 10) / log(10), 9)
+		return pow(log(day + 10) / log(10), 7)
 		
 var day : int = 0
 var day_progress : float = 0.0
@@ -127,13 +128,12 @@ func check_for_gameend(delta : float) -> void:
 	
 func _process(delta: float) -> void:
 	if Input.is_action_pressed("speedup"):
-		print("yes")
 		Engine.time_scale = 5.0
 	else:
 		Engine.time_scale = 1.0
 
 func do_day_progress(delta: float) -> void:
-	day_progress += delta * .03
+	day_progress += delta * .045
 	if day_progress >= 1.0:
 		day_progress = 0.0
 		day += 1
@@ -147,8 +147,11 @@ var building : bool = false
 func check_for_building(delta: float) -> void:
 	var creatures := Game.get_creatures_by_emotion(null)
 	var creatures_with_items : Array[N_Creature]
+	var sad_creatures : int = 0
 	for creature in creatures:
 		if creature.item_picked_up:
+			if creature.emotion is N_Creature.Sad:
+				sad_creatures += 1
 			creatures_with_items.append(creature)
 	
 	
@@ -160,6 +163,12 @@ func check_for_building(delta: float) -> void:
 		building_status_color = Color.RED
 		valid = false
 		return
+	if creatures_with_items.size() - sad_creatures <= 4:
+		building_status = "Too many sad creatures with items.."
+		building_status_color = Color.DODGER_BLUE
+		valid = false
+		return
+		
 	var points : Array[Vector3] = []
 	var has_cluster_nodes : Array[N_Creature] = find_cluster(creatures_with_items, 5, 15.0)
 	if has_cluster_nodes.size() <= 0:
@@ -210,7 +219,6 @@ func start_building(itemed_creatures : Array[N_Creature], center : Vector3) -> v
 			creature.item_picked_up.kill_me()
 			creature.item_picked_up = null
 	var instance := spawn_building(center, madefrom)
-	print("spawned building")
 	instance.start_pos = center
 	building = false
 	return
@@ -272,6 +280,13 @@ func camera_raycast_all(length : float) -> Dictionary:
 	var origin = camera.project_ray_origin(center)
 	var end = origin + camera.project_ray_normal(center) * length
 	var query = PhysicsRayQueryParameters3D.create(origin, end)
+	query.collide_with_areas = true
+	var result = camera.get_world_3d().direct_space_state.intersect_ray(query)
+	return result
+	
+	
+func from_raycast_all(start : Vector3, end : Vector3, length : float) -> Dictionary:
+	var query = PhysicsRayQueryParameters3D.create(start, end)
 	query.collide_with_areas = true
 	var result = camera.get_world_3d().direct_space_state.intersect_ray(query)
 	return result

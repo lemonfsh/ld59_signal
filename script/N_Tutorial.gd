@@ -8,8 +8,8 @@ var tutorial_index : int = 0
 
 var tutorial_texts : Array[String] = [
 	"These are your GLORBLES.\n \nSignal to them where to go with\nLEFT CLICK\nSignal to them where to avoid with\nRIGHT CLICK\n \nPress SPACE to continue",
-	"Your glorbles have EMOTIONS.\n \nSignal them too much and\ntheyll become ANGRY and unresponsive",
-	"Signal them too little and\ntheyll become SAD and slow.",
+	"Your glorbles have EMOTIONS.\n \nIf you signal them too much\ntheyll become ANGRY\n \nANGRY glorbles wont react to your signals",
+	"If your glorbles see each other die\ntheyll become SAD\n \nSAD glorbles will\nreact slowly to your signals\nand refuse to BUILD",
 	"They are also sometimes\ntoo dumb to understand you,\nand youll be ignored",
 	"Your glorbles have STATS\nthat affect their EMOTIONS\n \nUse MIDDLE CLICK to inspect them",
 	"Your glorbles pick up ITEMS when\nthey get close to one\n \nIf glorbles that hold items are\nclose enough to each other,\ntheyll start to build a BUILDING",

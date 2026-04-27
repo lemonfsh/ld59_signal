@@ -92,7 +92,7 @@ func attack() -> void:
 	var creatures : Array[N_Creature] = Game.get_creatures_by_emotion(null)
 	var enemy_creatures : Array[N_Creature]
 	for creature in creatures:
-		if creature.data.team == 1:
+		if creature.data.team == 1 and creature.global_position.distance_to(global_position) < 20.0:
 			enemy_creatures.append(creature)
 		
 	if enemy_creatures.size() <= 0:
@@ -100,12 +100,20 @@ func attack() -> void:
 	var rand_chosen_cr : N_Creature = Game.get_random_element_from_array(enemy_creatures, Game.rng_game)
 	rand_chosen_cr.data.damage_me(rand_chosen_cr)
 	
-	var offset : Vector3 = Vector3(0, 4, 0)
-	var particle : N_Particle = Particle.spawn_particle(Particle.ParticleType.BuildingAttacked, global_position + offset)
-	particle.look_at(rand_chosen_cr.global_position)
-	particle.rotate_y(90)
+	#var offset : Vector3 = (Game.camera.global_position - sprite.global_position).normalized() * 2
+	var offset : Vector3 = Vector3(0, 3, 0)
+	var line = Util.create_line(global_position, rand_chosen_cr.global_position, Game.try_get_image(Game.texture_dict, "particle"), Color.SEA_GREEN, .5)
+	
 	
 	Particle.spawn_particle(Particle.ParticleType.BuildingAttacked, rand_chosen_cr.global_position + offset)
+	Particle.spawn_particle(Particle.ParticleType.Hit, rand_chosen_cr.global_position)
+	
+	var dir = (rand_chosen_cr.global_position - global_position).normalized()
+	dir.y *= .02
+	var power = 40
+	
+	rand_chosen_cr.linear_velocity += dir * power
+	
 	
 	Audio.play_sound(Audio.AudioName.Buildattack, 1.0)
 	

@@ -12,6 +12,8 @@ var gravity_vector : Vector3 = Game.default_gravity_vector:
 		constant_force = gravity_vector * Game.gravity_scale
 
 func _ready() -> void:
+	gravity_vector = Game.default_gravity_vector
+	
 	if !data:
 		data = Player.new()
 	data.reset_target(self)
@@ -37,6 +39,7 @@ var dying : bool = false
 func kill_me() -> void:
 	if dying:
 		return
+	Game.creature_died.emit(global_position, self)
 	dying = true
 	data.on_death(self)
 	Particle.spawn_particle(Particle.ParticleType.Die, global_position)
@@ -44,6 +47,10 @@ func kill_me() -> void:
 		item_picked_up.picked_up_by = null
 		item_picked_up = null
 	queue_free()
+
+@onready var T_on_someone_died = Game.creature_died.connect(on_someone_died)
+func on_someone_died(pos : Vector3, creature : N_Creature) -> void:
+	data.on_someone_died(self, pos, creature)
 
 @onready var T_on_signal = Game.signal_emitted.connect(on_signal)
 func on_signal(pos : Vector3, xsignal : Game.XSignal) -> void:
@@ -114,7 +121,7 @@ class Sad extends Emotion:
 	func _init() -> void:
 		name = "Sad"
 		ui_image_path = "sad"
-		timer = 3.0
+		timer = 9.0
 		
 	func on_react_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
 		activate_me(me)
@@ -129,9 +136,9 @@ class Sad extends Emotion:
 	func on_enter_this_emotion(me : N_Creature) -> void:
 		activate_me(me)
 		Audio.play_sound(Audio.AudioName.Sad, 1.0)
-		me.data.get_stat(D_Stats.Speed).change_value(-7)
+		me.data.get_stat(D_Stats.Speed).change_value(-9)
 	func on_exit_this_emotion(me : N_Creature) -> void:
-		me.data.get_stat(D_Stats.Speed).change_value(7)
+		me.data.get_stat(D_Stats.Speed).change_value(9)
 	
 	
 	
@@ -193,6 +200,9 @@ class CreatureData:
 		get_stat(D_Stats.Mood).change_value(Game.rng_game.randfn(inc, std))
 		get_stat(D_Stats.Intelligence).change_value(Game.rng_game.randfn(inc, std))
 	
+	func on_someone_died(me : N_Creature, pos : Vector3, creature : N_Creature) -> void:
+		for stat : D_Stats.Stat in stats.values():
+			stat.on_someone_died(me, pos, creature)
 	
 	func get_stat(type : Variant) -> D_Stats.Stat:
 		var get_from_dict = stats.get(type)
@@ -203,6 +213,10 @@ class CreatureData:
 	
 	
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
+		if me.global_position.y <= -100:
+			me.kill_me()
+		
+		
 		invincible_timer -= delta
 		invincible_timer = max(-.01, invincible_timer)
 		
@@ -335,9 +349,21 @@ class Enemy extends CreatureData:
 	
 	var target_creature_or_building : N_Abstract = null
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
+		if me.global_position.y <= -100:
+			me.kill_me()
 		find_target(me)
-		movement(me, delta)
+		
+		#if target_creature_or_building:
+			#DebugDraw3D.draw_sphere(target_creature_or_building.global_position, 2.0, Color.GREEN, delta)
+			#DebugDraw3D.draw_arrow(me.global_position, target_creature_or_building.global_position, Color.GREEN, 4.0, true, delta)
 		check_attack(me)
+		
+		if target_creature_or_building:
+			var raycast = Game.from_raycast_all(me.global_position, target_creature_or_building.global_position, 9999.9)
+			if raycast.get("collider") != target_creature_or_building:
+				target_creature_or_building = null
+				target = Vector3(0, 4, 0)
+		movement(me, delta)
 		
 	func check_attack(me : N_Creature) -> void:
 		if !target_creature_or_building:
@@ -363,13 +389,13 @@ class Enemy extends CreatureData:
 		var creatures := Game.get_creatures_by_emotion(null)
 		var buildings := Game.get_buildings()
 		var pot_targets : Array[N_Abstract] = []
-		for c in creatures:
-			pot_targets.append(c)
-		for b in buildings:
-			pot_targets.append(b)
+		pot_targets.append_array(creatures)
+		pot_targets.append_array(buildings)
 			
 		for e : N_Abstract in pot_targets:
 			var dist = e.global_position.distance_to(me.global_position)
+			if e is N_Building:
+				dist *= 1.5
 			if dist >= lowest_dist:
 				continue
 			if e == me:
@@ -377,6 +403,7 @@ class Enemy extends CreatureData:
 			if e is N_Creature:
 				if e.data.team == team:
 					continue
+			
 			lowest_dist = dist
 			closest_target = e
 			
@@ -391,7 +418,7 @@ class Enemy extends CreatureData:
 		
 	func on_death(me : N_Creature) -> void:
 		var rngvalue = Game.rng_game.randf_range(0.0, 1.0)
-		if rngvalue < .6:
+		if rngvalue < .8:
 			Game.spawn_item(me.global_position)
 		
 	func attack_building(me : N_Creature, victim : N_Building) -> void:

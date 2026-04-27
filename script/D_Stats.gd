@@ -34,6 +34,9 @@ class Stat:
 		#change_value(temporary_value_delta)
 		#temporary_value_delta = 0.0
 	
+	func on_someone_died(me : N_Creature, pos : Vector3, creature : N_Creature) -> void:
+		return
+		
 	func activate_me() -> void:
 		var me : N_Creature = Game.find_creature_by_stat(self)
 		if !me:
@@ -69,7 +72,7 @@ class Patience extends Stat:
 	func _init() -> void:
 		ui_image_path = "patience"
 		desc = "Patience:\naffects mood reactions to signals"
-		base_value = 20.0
+		base_value = 28.0
 		value = 10.0
 	func on_signal(me : N_Creature, pos : Vector3, xsignal : Game.XSignal) -> bool:
 		me.data.get_stat(Mood).change_value(-(base_value - value))
@@ -85,7 +88,7 @@ class Mood extends Stat:
 		value_changed.emit()
 		if new_value <= 0.0:
 			var me : N_Creature = Game.find_creature_by_stat(self)
-			if me and me.emotion is N_Creature.Content:
+			if me and me.emotion is N_Creature.Content and me.data.team == 0:
 				var chance = Game.rng_game.randf_range(0.0, me.data.get_stat(D_Stats.Patience).base_value)
 				if chance > me.data.get_stat(D_Stats.Patience).value:
 					me.change_emotion(N_Creature.Angry.new())
@@ -93,7 +96,7 @@ class Mood extends Stat:
 					value = 150
 		if new_value >= 200.0:
 			var me : N_Creature = Game.find_creature_by_stat(self)
-			if me and me.emotion is N_Creature.Content:
+			if me and me.emotion is N_Creature.Content and me.data.team == 0:
 				if !Game.game_started:
 					value = 100
 					return
@@ -103,8 +106,13 @@ class Mood extends Stat:
 				else:
 					value = 150
 		
+	func on_someone_died(me : N_Creature, pos : Vector3, creature : N_Creature) -> void:
+		var distance = me.global_position.distance_to(pos)
+		if distance <= 50 and creature.data.team == 0:
+			change_value((50 - distance) * 1.5)
+		
 	func on_physics_proccess(me : N_Creature, delta : float) -> void:
-		change_value(.18)
+		set_value(lerpf(value, 100, .005))
 
 class Intelligence extends Stat:
 	func _init() -> void:

@@ -1,4 +1,4 @@
-extends CPUParticles3D
+extends Node3D
 class_name N_Particle
 
 func _ready() -> void:

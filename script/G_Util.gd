@@ -64,7 +64,46 @@ func create_timer(time : float) -> Signal:
 	
 	
 	
+static var line_prefab = preload("res://scenes/line.tscn")
+func create_line(point_a: Vector3, point_b: Vector3, texture: Texture2D = null, color: Color = Color.WHITE, width: float = 0.05) -> MeshInstance3D:
+	var line_mesh = line_prefab.instantiate()
+	var box_mesh = BoxMesh.new()
 	
+	box_mesh.size = Vector3(width, width, 1.0)
+	line_mesh.mesh = box_mesh
+	line_mesh.top_level = true
 	
+	add_child(line_mesh)
+	
+	var midpoint = point_a.lerp(point_b, 0.5)
+	var distance = point_a.distance_to(point_b)
+	
+	line_mesh.global_position = midpoint
+	line_mesh.look_at(point_a, Vector3.UP)
+	line_mesh.scale = Vector3(1, 1, distance)
+	
+	var material = StandardMaterial3D.new()
+	material.albedo_color = color
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	
+	if texture:
+		material.albedo_texture = texture
+		material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+		material.uv1_scale = Vector3(1, distance, 1)
+	
+	line_mesh.material_override = material
+	
+	return line_mesh
+
+func update_line(line: MeshInstance3D, point_a: Vector3, point_b: Vector3):
+	var midpoint = point_a.lerp(point_b, 0.5)
+	var direction = point_b - point_a
+	var distance = direction.length()
+	
+	line.global_position = midpoint
+	line.look_at(midpoint + direction, Vector3.UP)
+	line.rotate_object_local(Vector3(1, 0, 0), deg_to_rad(90))
+	line.scale = Vector3(1, 1, distance)
 	
 	
